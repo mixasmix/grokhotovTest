@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -25,6 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(security: 'is_granted(ROLE_ADMIN)'),
     ]
 )]
+#[ApiFilter(filterClass: SearchFilter::class, properties: ['name', 'books.title', 'books.status'])]
 class Category
 {
     #[ORM\Id]
