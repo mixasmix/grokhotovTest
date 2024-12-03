@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  database:
+    container_name: mysql-test
+    image: mysql:8.4-oraclelinux8
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql84_data:/var/lib/mysql
+    command: ["mysqld"]
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:33867:3306
+  php:
+    container_name: php-test
+    build:
+      context: ./.docker/php-fpm
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/api
+  nginx:
+    container_name: nginx-test
+    image: nginx:stable-alpine
+    ports:
+      - '8089:80'
+      - '8449:443'
+    volumes:
+      - ./public:/var/www/api/public
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - database
+    restart: always
+volumes:
+  mysql84_data:

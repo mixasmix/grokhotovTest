@@ -1,0 +1,28 @@
+api_platform:
+    title: Books
+    version: 1.0.0
+    defaults:
+        stateless: true
+        pagination_maximum_items_per_page: '%env(int:PAGINATION_MAXIMUM_ITEMS_PER_PAGE)%'
+        pagination_enable: true
+        pagination_items_per_page: '%env(int:PAGINATION_ITEMS_PER_PAGE)%'
+        pagination_client_items_per_page: true
+        route_prefix: /api/v1
+        cache_headers:
+            vary: [ 'Content-Type', 'Authorization', 'Origin' ]
+        extra_properties:
+            standard_put: true
+            rfc_7807_compliant_errors: true
+    formats:
+        jsonld: [ 'application/ld+json' ]
+        multipart: [ 'multipart/form-data' ]
+    docs_formats:
+        jsonld: [ 'application/ld+json' ]
+        jsonopenapi: [ 'application/vnd.openapi+json' ]
+        html: [ 'text/html' ]
+    use_symfony_listeners: true
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
