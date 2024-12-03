@@ -9,5 +9,6 @@ fi
 
 docker compose up -d
 docker exec php-test php bin/console d:m:m --no-interaction
+docker exec php-test php bin/console lexik:jwt:generate-keypair --skip-if-exists
 docker exec php-test php bin/console user:create --login=admin --password=admin --roles=ROLE_ADMIN
 docker exec php-test php bin/console books:load-from-file $BOOKS_SOURCE

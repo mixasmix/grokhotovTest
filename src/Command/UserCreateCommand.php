@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\UserService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -41,15 +42,21 @@ class UserCreateCommand extends Command
 
         $password = $input->getOption('password');
 
-        $user = $this->userService->create(
-            login: $input->getOption('login'),
-            roles: $input->getOption('roles'),
-            description: $input->getOption('description'),
-        );
+        try {
+            $user = $this->userService->create(
+                login: $input->getOption('login'),
+                roles: $input->getOption('roles'),
+                description: $input->getOption('description'),
+            );
 
-        $user->setPassword($this->hasher->hashPassword(user: $user, plainPassword: $password));
+            $user->setPassword($this->hasher->hashPassword(user: $user, plainPassword: $password));
 
-        $this->entityManager->flush();
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            $io->error('Пользователь с таким логином уже существует');
+
+            return Command::INVALID;
+        }
 
         $io->success(
             sprintf(
